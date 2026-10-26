@@ -1,29 +1,29 @@
 # Anna Kit portfolio
 
-Responsive static HTML/CSS/JavaScript portfolio with seven sections. Anna is now based in Australia; Russian locations describe her professional background.
+Static portfolio with Home, PR & Media, Social & Content, Video & Production, About Me and Contact pages.
 
-## Preview
+## Local preview
 
-Run `python3 -m http.server 4173` from this directory, then visit `http://localhost:4173`. No build step is needed.
+Run `python3 scripts/serve.py --port 4174`, then open `http://127.0.0.1:4174`.
+The preview scans `photography/` whenever the gallery requests its photo list. Add or remove photos, then refresh the page or return to Video & Production.
 
-## Content
+## Photography
 
-- `professionalHeadshot.jpg` is the supplied professional portrait.
-- LinkedIn is linked directly in `index.html`.
-- The PR & Media page has four paired press samples. Clicking a document preview opens a centred modal pop-up displaying the actual PDF and an English/Russian switch. Source PDFs remain available inside the reader. The unmatched buffalo-horn release and its generated translation are no longer displayed; the supplied source file is preserved.
-- The duplicate English drug-precursor PDF is retained in the source folder but not linked twice.
-- The contact form has been removed. The contact email is `iam@annakit.com.au`, linked directly in `index.html`. LinkedIn uses an accessible icon button.
+Place images in `photography/`. JPG, JPEG, PNG, WebP, GIF, AVIF and SVG files are supported, including subfolders. Hidden files and unsupported formats are ignored. Images are sorted by filename. The carousel and full-size viewer use every image in the generated list; no HTML edits are needed. Empty and single-photo folders are supported.
 
-## Before publishing
+`python3 scripts/photos.py` refreshes `photography.json` when using a plain static preview server.
 
-Complete other work samples, case-study details and language proficiency. Confirm employment and education dates. The PR employment entry records the supplied start year without asserting current employment after the move.
+## Build and Cloudflare Pages
 
-## Cloudflare static hosting
+- Build command: `python3 scripts/build.py`
+- Build output directory: `dist`
 
-Deploy `index.html`, `styles.css`, `app.js`, `favicon.svg`, `professionalHeadshot.jpg`, `press-releases.js`, the `assets/` and `vendor/` directories and the linked PDF files in `press releases/`, preserving paths. No framework or build command is required. Keep the resume PDF and `.DS_Store` files out of public uploads. No deployment has been performed.
+Each build scans the photo folder and creates a fresh manifest, then copies the website and its assets to `dist/`. For manual uploads, run the build and upload `dist/`. For Git-connected deployment, use the build command above so photo additions and removals are picked up on every deployment. A deployed static site updates when a new build is deployed; it cannot inspect a folder on your computer.
 
-Google Fonts supplies DM Sans and Manrope; system fonts are used if unavailable. Hash navigation needs no server route rules. Without JavaScript, all sections remain visible and the press cards open their English source PDFs. The bilingual PDF pop-up needs JavaScript. The actual PDF is rendered using the bundled Mozilla PDF.js library, with zoom and a direct source link. Vendor version: 5.6.205; Apache-2.0 license included.
+The output includes the photography folder, portrait, document previews, bilingual press-release PDFs and bundled PDF.js. Source scripts, the resume PDF and `.DS_Store` files are excluded. No deployment is performed by the build.
 
-## Visual direction
+## Features
 
-The user’s reference PDF informed the lilac/pink palette, subtle iridescent background and layered paper treatment. Document thumbnails in `assets/` are rendered from the supplied English PDFs. `press-releases.js` contains text extracted from the eight supplied PDFs, preserving the source wording. No additional translation is generated.
+Press releases open in a modal with English/Russian PDFs, zoom and source links. Video projects use YouTube embeds. Social & Content displays selected Instagram embeds. Contact links are maintained in `index.html`. Hash navigation needs no server route rules.
+
+Google Fonts supplies DM Sans and Manrope. PDF.js 5.6.205 is bundled under its included Apache-2.0 licence.

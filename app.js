@@ -179,30 +179,109 @@ new ResizeObserver(() => {
   resizeTimer = setTimeout(() => { if (reader.open) loadPdf(activeRelease.versions[readerLanguage]); }, 150);
 }).observe(readerContent);
 
-// Native dialog keeps the full photographs accessible by mouse and keyboard.
-const photoLinks = [...document.querySelectorAll('.photo-link')];
+// Photos are discovered during the build, or on demand by the local preview.
+let photoLinks = [];
+const photoTrack = document.querySelector('#photo-track');
+const galleryMessage = document.querySelector('#gallery-message');
+const carouselControls = document.querySelector('.carousel-controls');
+const carouselPrevious = document.querySelector('#carousel-previous');
+const carouselNext = document.querySelector('#carousel-next');
 const photoViewer = document.querySelector('#photo-viewer');
 const fullPhoto = document.querySelector('#photo-viewer-image');
 let photoIndex = 0;
 let photoTrigger = null;
+let gallerySignature = '';
+let galleryLoading = false;
+
+function updateCarousel() {
+  if (!photoLinks.length || !photoTrack.clientWidth) return;
+  const bounds = photoTrack.getBoundingClientRect();
+  const visible = photoLinks.map((link, index) => ({index, bounds: link.getBoundingClientRect()}))
+    .filter(item => item.bounds.right > bounds.left + 2 && item.bounds.left < bounds.right - 2);
+  if (visible.length) {
+    const first = visible[0].index + 1;
+    const last = visible[visible.length - 1].index + 1;
+    document.querySelector('#carousel-position').textContent = `${first === last ? first : `${first}–${last}`} of ${photoLinks.length}`;
+  }
+  const visibleFraction = Math.min(1, photoTrack.clientWidth / photoTrack.scrollWidth);
+  const progress = document.querySelector('.carousel-progress span');
+  progress.style.width = `${visibleFraction * 100}%`;
+  progress.style.left = `${photoTrack.scrollLeft / photoTrack.scrollWidth * 100}%`;
+  carouselPrevious.disabled = photoTrack.scrollLeft <= 2;
+  carouselNext.disabled = photoTrack.scrollLeft + photoTrack.clientWidth >= photoTrack.scrollWidth - 2;
+}
+function moveCarousel(direction) {
+  const distance = photoLinks[0]?.getBoundingClientRect().width || photoTrack.clientWidth;
+  photoTrack.scrollBy({left: direction * (distance + 20), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+}
+carouselPrevious.addEventListener('click', () => moveCarousel(-1));
+carouselNext.addEventListener('click', () => moveCarousel(1));
+photoTrack.addEventListener('scroll', updateCarousel, {passive: true});
+new ResizeObserver(updateCarousel).observe(photoTrack);
+photoTrack.addEventListener('keydown', event => {
+  if (event.target !== photoTrack) return;
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    event.preventDefault();
+    moveCarousel(event.key === 'ArrowLeft' ? -1 : 1);
+  }
+});
+async function loadPhotography() {
+  if (galleryLoading) return;
+  galleryLoading = true;
+  try {
+    const response = await fetch('photography.json', {cache: 'no-store'});
+    if (!response.ok) throw new Error('Photo list unavailable');
+    const photos = await response.json();
+    if (!Array.isArray(photos) || !photos.every(photo => typeof photo.src === 'string' && photo.src.startsWith('photography/') && typeof photo.alt === 'string')) throw new Error('Invalid photo list');
+    const signature = JSON.stringify(photos);
+    if (signature === gallerySignature) { updateCarousel(); return; }
+    if (photoViewer.open) photoViewer.close();
+    photoLinks = photos.map((photo, index) => {
+      const link = document.createElement('a');
+      link.className = 'photo-link';
+      link.href = photo.src;
+      link.setAttribute('aria-label', `View photograph ${index + 1} of ${photos.length}: ${photo.alt}`);
+      const img = document.createElement('img');
+      img.src = photo.src;
+      img.alt = photo.alt;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      link.append(img);
+      link.addEventListener('click', event => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        photoTrigger = link;
+        showPhoto(index);
+        photoViewer.showModal();
+        document.body.classList.add('gallery-open');
+        photoViewer.querySelector('.photo-close').focus();
+      });
+      return link;
+    });
+    photoTrack.replaceChildren(...photoLinks);
+    photoTrack.scrollLeft = 0;
+    gallerySignature = signature;
+    carouselControls.hidden = photos.length === 0;
+    galleryMessage.hidden = photos.length > 0;
+    galleryMessage.textContent = 'No photographs to display yet.';
+    photoViewer.querySelector('.photo-previous').disabled = photos.length < 2;
+    photoViewer.querySelector('.photo-next').disabled = photos.length < 2;
+    updateCarousel();
+  } catch (error) {
+    if (!photoLinks.length) {
+      galleryMessage.hidden = false;
+      galleryMessage.textContent = 'The gallery could not be loaded. Please refresh the page to try again.';
+    }
+  } finally { galleryLoading = false; }
+}
 function showPhoto(index) {
+  if (!photoLinks.length) return;
   photoIndex = (index + photoLinks.length) % photoLinks.length;
   const link = photoLinks[photoIndex];
   fullPhoto.src = link.href;
   fullPhoto.alt = link.querySelector('img').alt;
   document.querySelector('#photo-position').textContent = `${photoIndex + 1} / ${photoLinks.length}`;
 }
-photoLinks.forEach((link, index) => {
-  link.addEventListener('click', event => {
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-    photoTrigger = link;
-    showPhoto(index);
-    photoViewer.showModal();
-    document.body.classList.add('gallery-open');
-    photoViewer.querySelector('.photo-close').focus();
-  });
-});
 photoViewer.querySelector('.photo-close').addEventListener('click', () => photoViewer.close());
 photoViewer.querySelector('.photo-previous').addEventListener('click', () => showPhoto(photoIndex - 1));
 photoViewer.querySelector('.photo-next').addEventListener('click', () => showPhoto(photoIndex + 1));
@@ -220,4 +299,9 @@ photoViewer.addEventListener('close', () => {
   document.body.classList.remove('gallery-open');
   photoTrigger?.focus({preventScroll: true});
 });
-window.addEventListener('hashchange', () => { if (photoViewer.open) photoViewer.close(); });
+window.addEventListener('hashchange', () => {
+  if (photoViewer.open) photoViewer.close();
+  if (location.hash === '#video-production') loadPhotography();
+});
+window.addEventListener('focus', () => { if (location.hash === '#video-production') loadPhotography(); });
+loadPhotography();
