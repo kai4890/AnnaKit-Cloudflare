@@ -70,3 +70,14 @@ body.reader-open{overflow:hidden}
 
 /* Route headings receive focus for screen readers, without a selection-like outline. */
 .page h1[tabindex="-1"]:focus{outline:none}
+
+/* Small illustrated stickers bring a little personality to the Work profile. */
+.work-art{position:relative;overflow:visible}
+.work-sticker{position:absolute;z-index:2;top:-18px;right:14px;width:76px;height:76px;padding:8px;overflow:visible;fill:var(--accent);stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;background:var(--paper);border:5px solid #fff;border-radius:20px 18px 21px 17px;box-shadow:0 6px 14px #30283824;transform:rotate(7deg)}
+.work-sticker .sticker-detail{fill:none;stroke:#fff;stroke-width:3}
+.sticker-social{fill:var(--pink);stroke:var(--accent);transform:rotate(-7deg)}
+.sticker-social .sticker-detail{fill:none;stroke:var(--accent);stroke-width:2.5}
+.sticker-video{fill:var(--blue);stroke:var(--accent-dark);transform:rotate(5deg)}
+.sticker-video .sticker-detail{fill:none;stroke:#fff;stroke-width:3}
+.carousel-controls button:disabled{opacity:1;cursor:pointer}
+@media(max-width:720px){.work-sticker{top:-13px;right:12px;width:66px;height:66px;padding:7px}}

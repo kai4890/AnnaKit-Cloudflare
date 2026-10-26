@@ -9,7 +9,7 @@ The preview scans `photography/` whenever the gallery requests its photo list. A
 
 ## Photography
 
-Place images in `photography/`. JPG, JPEG, PNG, WebP, GIF, AVIF and SVG files are supported, including subfolders. Hidden files and unsupported formats are ignored. Images are sorted by filename. The carousel and full-size viewer use every image in the generated list; no HTML edits are needed. Empty and single-photo folders are supported.
+Place images in `photography/`. JPG, JPEG, PNG, WebP, GIF, AVIF and SVG files are supported, including subfolders. Hidden files and unsupported formats are ignored. Images are sorted by filename. The carousel wraps at either end, and the full-size viewer browses every image in the generated list; no HTML edits are needed. Empty and single-photo folders are supported.
 
 `python3 scripts/photos.py` refreshes `photography.json` when using a plain static preview server.
 

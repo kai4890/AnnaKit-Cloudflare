@@ -207,12 +207,23 @@ function updateCarousel() {
   const progress = document.querySelector('.carousel-progress span');
   progress.style.width = `${visibleFraction * 100}%`;
   progress.style.left = `${photoTrack.scrollLeft / photoTrack.scrollWidth * 100}%`;
-  carouselPrevious.disabled = photoTrack.scrollLeft <= 2;
-  carouselNext.disabled = photoTrack.scrollLeft + photoTrack.clientWidth >= photoTrack.scrollWidth - 2;
 }
 function moveCarousel(direction) {
-  const distance = photoLinks[0]?.getBoundingClientRect().width || photoTrack.clientWidth;
-  photoTrack.scrollBy({left: direction * (distance + 20), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+  if (photoLinks.length < 2) return;
+  const maxScroll = photoTrack.scrollWidth - photoTrack.clientWidth;
+  const atStart = photoTrack.scrollLeft <= 2;
+  const atEnd = photoTrack.scrollLeft >= maxScroll - 2;
+  const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+  if (direction < 0 && atStart) {
+    photoTrack.scrollTo({left: maxScroll, behavior});
+    return;
+  }
+  if (direction > 0 && atEnd) {
+    photoTrack.scrollTo({left: 0, behavior});
+    return;
+  }
+  const distance = photoLinks[0].getBoundingClientRect().width || photoTrack.clientWidth;
+  photoTrack.scrollBy({left: direction * (distance + 20), behavior});
 }
 carouselPrevious.addEventListener('click', () => moveCarousel(-1));
 carouselNext.addEventListener('click', () => moveCarousel(1));
