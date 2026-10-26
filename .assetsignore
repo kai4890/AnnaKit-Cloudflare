@@ -1,0 +1,15 @@
+# Keep repository metadata, build helpers, and private source files off the public site.
+.git/
+.gitignore
+.gitattributes
+.assetsignore
+.wrangler/
+wrangler.jsonc
+README.md
+scripts/
+dist/
+__pycache__/
+*.pyc
+.DS_Store
+**/.DS_Store
+/Anna Kit - Resume - v0.1 (1).pdf

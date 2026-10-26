@@ -13,14 +13,15 @@ Place images in `photography/`. JPG, JPEG, PNG, WebP, GIF, AVIF and SVG files ar
 
 `python3 scripts/photos.py` refreshes `photography.json` when using a plain static preview server.
 
-## Build and Cloudflare Pages
+## Build and deploy on Cloudflare Workers
 
-- Build command: `python3 scripts/build.py`
-- Build output directory: `dist`
+Keep the Worker deploy command as `npx wrangler deploy`. The Wrangler config publishes the repository root directly, and `.assetsignore` limits uploads to the website and its public media. This avoids a separate build step in Cloudflare. The Worker name in `wrangler.jsonc` must match the name of the Worker connected to this repository in Cloudflare.
 
-Each build scans the photo folder and creates a fresh manifest, then copies the website and its assets to `dist/`. For manual uploads, run the build and upload `dist/`. For Git-connected deployment, use the build command above so photo additions and removals are picked up on every deployment. A deployed static site updates when a new build is deployed; it cannot inspect a folder on your computer.
+For a local build, run `python3 scripts/build.py`.
 
-The output includes the photography folder, portrait, document previews, bilingual press-release PDFs and bundled PDF.js. Source scripts, the resume PDF and `.DS_Store` files are excluded. No deployment is performed by the build.
+Run `python3 scripts/build.py` before committing changes to the photography folder. It scans the folder and refreshes `photography.json`; Cloudflare then deploys that manifest and the images with the site. A deployed static site updates when a new deployment is made; it cannot inspect a folder on your computer.
+
+For a local `dist/` build, the output includes the photography folder, portrait, document previews, bilingual press-release PDFs and bundled PDF.js. Source scripts, the resume PDF and `.DS_Store` files are excluded. The build script does not deploy the site.
 
 ## Features
 

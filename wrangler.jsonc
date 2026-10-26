@@ -1,4 +1,9 @@
 {
+  "name": "annakit-cloudflare",
+  "compatibility_date": "2026-10-26",
+  "assets": {
+    "directory": "."
+  },
   "observability": {
     "logs": {
       "enabled": true,
