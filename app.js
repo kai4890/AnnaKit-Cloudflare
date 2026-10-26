@@ -34,6 +34,7 @@ function showPage({ focus = false } = {}) {
   }
   document.title = `Anna Kit — ${titles[id]}`;
   closeMenu();
+  window.scrollTo({top: 0, behavior: 'instant'});
   if (focus) {
     const heading = document.querySelector(`#${id} h1`);
     heading.setAttribute('tabindex', '-1');

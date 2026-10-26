@@ -81,3 +81,35 @@ body.reader-open{overflow:hidden}
 .sticker-video .sticker-detail{fill:none;stroke:#fff;stroke-width:3}
 .carousel-controls button:disabled{opacity:1;cursor:pointer}
 @media(max-width:720px){.work-sticker{top:-13px;right:12px;width:66px;height:66px;padding:7px}}
+
+/* Full-bleed site bars with content aligned to the centered page column. */
+body{min-height:100vh;display:flex;flex-direction:column}
+.site-header,.site-footer{width:100%;max-width:none;margin-inline:0}
+main{width:100%;flex:1 0 auto}
+.work-sticker.sticker-press{fill:#302b33;stroke:#fff;stroke-width:2.5;transform:rotate(4deg)}
+.work-sticker.sticker-press .sticker-detail{fill:none;stroke:#cbb8df;stroke-width:2.2}
+.work-sticker.sticker-press .camera-glint{fill:#f1cae5;stroke:none}
+/* Keep header and footer content aligned with the centered page column on wide screens. */
+.site-header,.site-footer{padding-inline:max(5%,calc((100% - 1350px)/2))}
+@media(max-width:720px){.site-header,.site-footer{padding-inline:6%}}
+
+/* Keep primary navigation visible while moving through the page. */
+.site-header{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px)}
+
+.sticker-video{fill:#dfd0f1;stroke:var(--accent-dark);stroke-width:2.5;transform:rotate(3deg)}
+.work-sticker.sticker-video .clapper-base{fill:#dfd0f1;stroke:var(--accent-dark);stroke-width:2.5}
+.work-sticker.sticker-video .clapper-flap{fill:var(--accent);stroke:var(--accent-dark);stroke-width:2.5}
+.work-sticker.sticker-video .sticker-detail{fill:none;stroke:#fff;stroke-width:3.5}
+
+.work-sticker.sticker-video{padding:9px;background:var(--paper);fill:none;stroke:var(--accent-dark);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;transform:rotate(3deg)}
+#home{scroll-margin-top:100px}
+@media(max-width:1000px){#home{scroll-margin-top:85px}}
+
+/* Clapperboard sticker: matching silhouette, outline, and restrained detail. */
+.work-sticker.sticker-video{padding:8px;background:var(--paper);fill:none;stroke:none;transform:rotate(4deg)}
+.work-sticker.sticker-video .clapper-body{fill:#302b33;stroke:#fff;stroke-width:2.5;stroke-linejoin:round}
+.work-sticker.sticker-video .clapper-top{fill:var(--accent);stroke:#fff;stroke-width:2.5;stroke-linejoin:round}
+.work-sticker.sticker-video .clapper-stripes{fill:#f4eff5;stroke:none}
+.work-sticker.sticker-video .clapper-detail{fill:none;stroke:#cbb8df;stroke-width:2.2;stroke-linecap:round}
+
+.work-sticker.sticker-video .clapper-top{fill:var(--accent);stroke:#fff;stroke-width:2.5;stroke-linejoin:round}
